@@ -111,7 +111,7 @@ class AppTheme {
     ),
 
     // Card theme with subtle elevation for spatial hierarchy
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: cardLight,
       elevation: 2.0,
       shadowColor: shadowLight,
@@ -308,7 +308,7 @@ class AppTheme {
     ),
 
     // Tab bar theme for content organization
-    tabBarTheme: TabBarTheme(
+    tabBarTheme: TabBarThemeData(
       labelColor: accentLight,
       unselectedLabelColor: textSecondaryLight,
       indicatorColor: accentLight,
@@ -354,7 +354,7 @@ class AppTheme {
     ),
 
     // Dialog theme
-    dialogTheme: DialogTheme(
+    dialogTheme: DialogThemeData(
       backgroundColor: dialogLight,
       surfaceTintColor: Colors.transparent,
       elevation: 8.0,

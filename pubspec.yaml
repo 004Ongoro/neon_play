@@ -31,6 +31,10 @@ dependencies:
   screen_brightness: ^0.2.2+1
   volume_controller: ^2.0.7
 
+  # File
+  file_picker: ^6.1.1
+  permission_handler: ^11.0.1
+
 dev_dependencies:
   flutter_test:    # CRITICAL: Required for Flutter project testing - DO NOT REMOVE
     sdk: flutter   # CRITICAL: Required for Flutter project testing - DO NOT REMOVE
