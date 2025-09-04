@@ -29,6 +29,92 @@ class _MediaLibraryHomeState extends State<MediaLibraryHome>
   Map<String, dynamic>? _selectedMediaForContext;
   List<Map<String, dynamic>> _filteredMediaList = [];
 
+  // Mock data for media library
+  List<Map<String, dynamic>> _mediaLibrary = [
+    {
+      "id": 1,
+      "title": "Epic Movie Trailer 2024",
+      "duration": "2:45",
+      "format": "MP4",
+      "type": "video",
+      "thumbnail":
+          "https://images.pexels.com/photos/7991579/pexels-photo-7991579.jpeg?auto=compress&cs=tinysrgb&w=800",
+      "progress": 0.3,
+      "lastPlayed": DateTime.now().subtract(const Duration(hours: 2)),
+    },
+    {
+      "id": 2,
+      "title": "Relaxing Piano Music",
+      "duration": "45:30",
+      "format": "MP3",
+      "type": "audio",
+      "thumbnail":
+          "https://images.pixabay.com/photo/2016/11/29/13/14/attractive-1869761_1280.jpg?auto=compress&cs=tinysrgb&w=800",
+      "progress": 0.7,
+      "lastPlayed": DateTime.now().subtract(const Duration(hours: 5)),
+    },
+    {
+      "id": 3,
+      "title": "Nature Documentary",
+      "duration": "58:12",
+      "format": "MKV",
+      "type": "video",
+      "thumbnail":
+          "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=compress&cs=tinysrgb&w=800",
+      "progress": 0.1,
+      "lastPlayed": DateTime.now().subtract(const Duration(days: 1)),
+    },
+    {
+      "id": 4,
+      "title": "Podcast Episode 42",
+      "duration": "1:23:45",
+      "format": "M4A",
+      "type": "audio",
+      "thumbnail":
+          "https://images.pexels.com/photos/7130560/pexels-photo-7130560.jpeg?auto=compress&cs=tinysrgb&w=800",
+      "progress": 0.0,
+      "lastPlayed": null,
+    },
+    {
+      "id": 5,
+      "title": "Cooking Tutorial",
+      "duration": "15:20",
+      "format": "AVI",
+      "type": "video",
+      "thumbnail":
+          "https://images.pixabay.com/photo/2017/05/11/19/44/fresh-2305192_1280.jpg?auto=compress&cs=tinysrgb&w=800",
+      "progress": 0.5,
+      "lastPlayed": DateTime.now().subtract(const Duration(hours: 12)),
+    },
+    {
+      "id": 6,
+      "title": "Jazz Collection",
+      "duration": "2:15:30",
+      "format": "FLAC",
+      "type": "audio",
+      "thumbnail":
+          "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=compress&cs=tinysrgb&w=800",
+      "progress": 0.2,
+      "lastPlayed": DateTime.now().subtract(const Duration(days: 2)),
+    },
+  ];
+
+  final List<Map<String, String>> _filterOptions = [
+    {"label": "All", "icon": "apps"},
+    {"label": "Video", "icon": "videocam"},
+    {"label": "Audio", "icon": "music_note"},
+    {"label": "Recent", "icon": "history"},
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _requestPermissions(); // Request permissions on init
+    _tabController = TabController(length: 3, vsync: this);
+    _filteredMediaList = List.from(_mediaLibrary);
+    _searchController.addListener(_onSearchChanged);
+  }
+
   Future<void> _requestPermissions() async {
     var status = await Permission.storage.status;
     if (!status.isGranted) {
@@ -58,17 +144,6 @@ class _MediaLibraryHomeState extends State<MediaLibraryHome>
     }
   }
 
-  void _onMediaTap(Map<String, dynamic> media) {
-  final String type = media['type'] as String;
-  final String path = media['path'] as String;
-
-  if (type == 'video') {
-    Navigator.pushNamed(context, '/video-player', arguments: path);
-  } else {
-    Navigator.pushNamed(context, '/audio-player', arguments: path);
-  }
-}
-
   String _getMediaType(String path) {
     String extension = path.split('.').last.toLowerCase();
     if (['mp4', 'mkv', 'avi', 'mov'].contains(extension)) {
@@ -78,22 +153,6 @@ class _MediaLibraryHomeState extends State<MediaLibraryHome>
     }
     return 'unknown';
   }
-
-  final List<Map<String, String>> _filterOptions = [
-    {"label": "All", "icon": "apps"},
-    {"label": "Video", "icon": "videocam"},
-    {"label": "Audio", "icon": "music_note"},
-    {"label": "Recent", "icon": "history"},
-  ];
-
-  @override
-void initState() {
-  super.initState();
-  _requestPermissions(); // Request permissions on init
-  _tabController = TabController(length: 3, vsync: this);
-  _filteredMediaList = List.from(_mediaLibrary);
-  _searchController.addListener(_onSearchChanged);
-}
 
   @override
   void dispose() {
@@ -158,10 +217,19 @@ void initState() {
 
   void _onMediaTap(Map<String, dynamic> media) {
     final String type = media['type'] as String;
-    if (type == 'video') {
-      Navigator.pushNamed(context, '/video-player');
+    if (media.containsKey('path')) {
+      final String path = media['path'] as String;
+      if (type == 'video') {
+        Navigator.pushNamed(context, '/video-player', arguments: path);
+      } else {
+        Navigator.pushNamed(context, '/audio-player', arguments: path);
+      }
     } else {
-      Navigator.pushNamed(context, '/audio-player');
+      if (type == 'video') {
+        Navigator.pushNamed(context, '/video-player');
+      } else {
+        Navigator.pushNamed(context, '/audio-player');
+      }
     }
   }
 
@@ -223,7 +291,7 @@ void initState() {
               subtitle: 'Select files from device storage',
               onTap: () {
                 Navigator.pop(context);
-                // Handle file browser
+                _pickMedia();
               },
             ),
             _buildImportOption(
