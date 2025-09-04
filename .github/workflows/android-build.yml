@@ -16,7 +16,7 @@ jobs:
           channel: 'stable'
 
       - name: Install dependencies
-        run: flutter pub get
+        run: flutter pub upgrade
 
       - name: Build Android APK
         run: flutter build apk --release
